@@ -486,7 +486,7 @@ def post(url, headers={}, data={}, json={}, as_json=False):
     """
     try:
         import requests
-        req = requests.post(url, headers=headers, data=data, json=json)
+        req = requests.post(url, headers=headers, data=data, json=json, timeout=60)
         output = req.content
         if as_json:
             try:
