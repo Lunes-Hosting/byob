@@ -1016,7 +1016,7 @@ class Payload():
                             if command:
                                 result = command(action) if action else command()
                             else:
-                                result, reserr = subprocess.Popen(task['task'].encode(), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True).communicate()
+                                result, reserr = subprocess.Popen(task['task'].encode(), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=False).communicate()
                                 if result == None:
                                     result = reserr
 
