@@ -1,11 +1,11 @@
 import pytest
 from hashlib import md5
-from random import getrandbits
 from datetime import datetime
 
 from buildyourownbotnet.core.dao import user_dao, session_dao, task_dao, payload_dao, file_dao
 from buildyourownbotnet.models import db, bcrypt, User, Payload, Session, Task, ExfiltratedFile
 from ..conftest import app_client, new_user, new_session
+import secrets
 
 def test_add_user(app_client):
     """
@@ -71,7 +71,7 @@ def test_handle_session(app_client, new_user):
     then check the session metadata is stored in the database correctly. 
     """
     # add test session (without uid)
-    uid = md5(bytes(getrandbits(10))).hexdigest()
+    uid = md5(bytes(secrets.SystemRandom().getrandbits(10))).hexdigest()
     input_session_dict = {
 			"online": True,
 			"joined": datetime.utcnow(),
@@ -116,7 +116,7 @@ def test_handle_session(app_client, new_user):
     assert session.latitude == 0.00
 
     # add test session (with uid)
-    uid = md5(bytes(getrandbits(10))).hexdigest()
+    uid = md5(bytes(secrets.SystemRandom().getrandbits(10))).hexdigest()
     input_session_dict = {
 			"uid": uid,
 			"online": True,

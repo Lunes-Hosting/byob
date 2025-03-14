@@ -2,10 +2,10 @@ import os
 import pytest
 import shutil
 from hashlib import md5
-from random import getrandbits
 from datetime import datetime
 from buildyourownbotnet import create_app
 from buildyourownbotnet.models import db, bcrypt, User, Payload, Session, Task, ExfiltratedFile
+import secrets
 
 OUTPUT_DIR = os.path.abspath('buildyourownbotnet/output')
 
@@ -49,7 +49,7 @@ def new_user():
 
 @pytest.fixture(scope='function')
 def new_session(new_user):
-	uid = md5(bytes(getrandbits(10))).hexdigest()
+	uid = md5(bytes(secrets.SystemRandom().getrandbits(10))).hexdigest()
 	session_dict = {
 			"id": 1,
 			"uid": uid,

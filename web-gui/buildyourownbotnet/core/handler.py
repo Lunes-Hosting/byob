@@ -7,8 +7,8 @@ import sys
 import json
 import string
 import base64
-import random
 import requests
+import secrets
 
 if sys.version_info[0] < 3:
 	from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
@@ -60,7 +60,7 @@ class Handler(BaseHTTPRequestHandler):
 
 		# generate random filename if not specified
 		if not filename:
-			filename = str().join([random.choice(string.lowercase + string.digits) for _ in range(3)]) + filetype
+			filename = str().join([secrets.choice(string.lowercase + string.digits) for _ in range(3)]) + filetype
 
 		output_path = os.path.join(OUTPUT_DIR, owner, 'files', filename)
 
