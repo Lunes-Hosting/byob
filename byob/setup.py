@@ -45,7 +45,7 @@ def main():
 
     # find pip
     try:
-        pip_path = subprocess.check_output('where pip' if os.name == 'nt' else 'which pip', shell=True).strip().rstrip()
+        pip_path = subprocess.check_output('where pip' if os.name == 'nt' else 'which pip', shell=False).strip().rstrip()
     except Exception as e:
         logger.debug("Error in pip package installer: {}".format(str(e)))
 
@@ -66,9 +66,9 @@ def main():
                 # intrct: added check for version for proper callout materials, and 
                 # running as subprocess rather than internal due to potential early exits in remote code.
                 if sys.version_info[0] > 2:
-                    subprocess.check_call("""{} -c 'from urllib.request import urlopen; exec(urlopen("https://bootstrap.pypa.io/get-pip.py").read())'""".format(sys.executable), shell=True)
+                    subprocess.check_call("""{} -c 'from urllib.request import urlopen; exec(urlopen("https://bootstrap.pypa.io/get-pip.py").read())'""".format(sys.executable), shell=False)
                 else:
-                    subprocess.check_call("""{} -c 'from urllib import urlopen; exec(urlopen("https://bootstrap.pypa.io/get-pip.py").read())'""".format(sys.executable), shell=True)
+                    subprocess.check_call("""{} -c 'from urllib import urlopen; exec(urlopen("https://bootstrap.pypa.io/get-pip.py").read())'""".format(sys.executable), shell=False)
             except Exception as e:
                 logger.debug("Error installing pip: {}".format(str(e)))
 
@@ -89,9 +89,9 @@ def main():
     try:
         print("Installing requirements.txt")
         if os.name != "nt":
-            locals()['pip_install_1'] = subprocess.Popen('sudo --prompt=" Please enter sudo password (to install python dependencies): " {} -m pip install -r {}'.format(sys.executable, requirements), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
+            locals()['pip_install_1'] = subprocess.Popen('sudo --prompt=" Please enter sudo password (to install python dependencies): " {} -m pip install -r {}'.format(sys.executable, requirements), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=False)
         else:
-            locals()['pip_install_1'] = subprocess.Popen('{} -m pip install -r {}'.format(sys.executable, requirements), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)           
+            locals()['pip_install_1'] = subprocess.Popen('{} -m pip install -r {}'.format(sys.executable, requirements), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=False)           
         for line in locals()['pip_install_1'].stdout:
             print(line.decode())
             sys.stdout.flush()

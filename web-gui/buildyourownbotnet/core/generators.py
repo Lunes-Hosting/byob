@@ -139,7 +139,7 @@ def obfuscate(input):
     temp.file.write(input)
     temp.file.close()
     name = os.path.join(tempfile.gettempdir(), temp.name)
-    obfs = subprocess.Popen('pyminifier -o {} --obfuscate-classes --obfuscate-variables --replacement-length=1 {}'.format(name, name), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
+    obfs = subprocess.Popen('pyminifier -o {} --obfuscate-classes --obfuscate-variables --replacement-length=1 {}'.format(name, name), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=False)
     obfs.wait()
     output = open(name, 'r').read().replace('# Created by pyminifier (https://github.com/liftoff/pyminifier)', '')
     os.remove(name)
@@ -277,7 +277,7 @@ def freeze(filename, icon=None, hidden=None, owner=None, operating_system=None, 
                                 docker_container=operating_system + '-' + architecture), 
                                 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, 
                                 cwd=path, 
-                                shell=True)
+                                shell=False)
 
     start_time = time.time()
 
