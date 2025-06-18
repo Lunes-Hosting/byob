@@ -81,11 +81,12 @@ import os
 import sys
 import zlib
 import base64
-import random
 import marshal
 import argparse
 import itertools
 import threading
+import secrets
+
 if sys.version_info[0] < 3:
     from urllib2 import urlparse
     from urllib import pathname2url
@@ -124,7 +125,7 @@ def main():
     Run the generator
 
     """
-    util.display(globals()['__banner'], color=random.choice(list(filter(lambda x: bool(str.isupper(x) and 'BLACK' not in x), dir(colorama.Fore)))), style='normal')
+    util.display(globals()['__banner'], color=secrets.choice(list(filter(lambda x: bool(str.isupper(x) and 'BLACK' not in x), dir(colorama.Fore)))), style='normal')
 
     parser = argparse.ArgumentParser(
         prog='client.py',

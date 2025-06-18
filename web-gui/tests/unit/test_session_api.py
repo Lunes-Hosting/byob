@@ -1,11 +1,11 @@
 import pytest
 from hashlib import md5
 from datetime import datetime
-from random import getrandbits
 from buildyourownbotnet import c2
 from buildyourownbotnet.core.dao import session_dao
 from buildyourownbotnet.server import SessionThread
 from ..conftest import app_client, new_user, login, cleanup
+import secrets
 
 
 def test_api_session_new(app_client, new_user):
@@ -14,7 +14,7 @@ def test_api_session_new(app_client, new_user):
     when a POST request is sent to /api/session/new endpoint with valid session parameters,
     check that the session metadata is correctly stored in the database and the metadata is returned as JSON.
     """
-    uid = md5(bytes(getrandbits(10))).hexdigest()
+    uid = md5(bytes(secrets.SystemRandom().getrandbits(10))).hexdigest()
     session_dict = {
 			"id": 1,
 			"online": True,

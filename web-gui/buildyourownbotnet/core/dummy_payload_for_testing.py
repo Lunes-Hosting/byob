@@ -4,6 +4,8 @@ import imp
 import sys
 import logging
 import contextlib
+import secrets
+
 if sys.version_info[0] < 3:
     from urllib2 import urlopen
 else:
@@ -254,7 +256,6 @@ import binascii
 import numpy
 import ftplib
 import socket
-import random
 import subprocess
 import functools
 import uuid
@@ -722,8 +723,7 @@ def color():
 
     """
     try:
-        import random
-        return random.choice(['BLACK', 'BLUE', 'CYAN', 'GREEN', 'LIGHTBLACK_EX', 'LIGHTBLUE_EX', 'LIGHTCYAN_EX', 'LIGHTGREEN_EX', 'LIGHTMAGENTA_EX', 'LIGHTRED_EX', 'LIGHTWHITE_EX', 'LIGHTYELLOW_EX', 'MAGENTA', 'RED', 'RESET', 'WHITE', 'YELLOW'])
+        return secrets.choice(['BLACK', 'BLUE', 'CYAN', 'GREEN', 'LIGHTBLACK_EX', 'LIGHTBLUE_EX', 'LIGHTCYAN_EX', 'LIGHTGREEN_EX', 'LIGHTMAGENTA_EX', 'LIGHTRED_EX', 'LIGHTWHITE_EX', 'LIGHTYELLOW_EX', 'MAGENTA', 'RED', 'RESET', 'WHITE', 'YELLOW'])
     except Exception as e:
         log("{} error: {}".format(color.__name__, str(e)))
 

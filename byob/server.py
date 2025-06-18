@@ -12,13 +12,13 @@ import base64
 import pickle
 import socket
 import struct
-import random
 import inspect
 import argparse
 import datetime
 import threading
 import subprocess
 import collections
+import secrets
 
 http_serv_mod = "SimpleHTTPServer"
 if sys.version_info[0] > 2:
@@ -390,7 +390,7 @@ class C2():
 
     def _banner(self):
         with self._lock:
-            util.display(__banner__, color=random.choice(['red','green','cyan','magenta','yellow']), style='bright')
+            util.display(__banner__, color=secrets.choice(['red','green','cyan','magenta','yellow']), style='bright')
             util.display("[?] ", color='yellow', style='bright', end=' ')
             util.display("Hint: show usage information with the 'help' command\n", color='white', style='normal')
         return __banner__

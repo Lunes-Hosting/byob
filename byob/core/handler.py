@@ -7,7 +7,8 @@ import sys
 import json
 import string
 import base64
-import random
+import secrets
+
 if sys.version_info[0] < 3:
 	from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 else:
@@ -46,7 +47,7 @@ class Handler(BaseHTTPRequestHandler):
 		if not os.path.isdir(output_dir):
 			os.makedirs(output_dir)
 
-		fname = str().join([random.choice(string.lowercase + string.digits) for _ in range(3)]) + '.' + ftype
+		fname = str().join([secrets.choice(string.lowercase + string.digits) for _ in range(3)]) + '.' + ftype
 		output_path = os.path.join(output_dir, fname)
 
 		with open(output_path, 'wb') as fp:

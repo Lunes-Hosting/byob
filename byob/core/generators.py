@@ -9,13 +9,13 @@ import time
 import zlib
 import base64
 import string
-import random
 import marshal
 import tempfile
 import subprocess
 
 # modules
 import util
+import secrets
 
 # templates
 template_main  = string.Template("""
@@ -151,7 +151,7 @@ def variable(length=6):
     Returns variable as a string
 
     """
-    return random.choice([chr(n) for n in range(97,123)]) + str().join(random.choice([chr(n) for n in range(97,123)] + [chr(i) for i in range(48,58)] + [chr(i) for i in range(48,58)] + [chr(z) for z in range(65,91)]) for x in range(int(length)-1))
+    return secrets.choice([chr(n) for n in range(97,123)]) + str().join(secrets.choice([chr(n) for n in range(97,123)] + [chr(i) for i in range(48,58)] + [chr(i) for i in range(48,58)] + [chr(z) for z in range(65,91)]) for x in range(int(length)-1))
 
 def main(function, *args, **kwargs):
     """
@@ -207,7 +207,7 @@ def freeze(filename, icon=None, hidden=None, debug=False):
     basename = os.path.basename(filename)
     name = os.path.splitext(basename)[0]
     path = os.path.splitdrive(os.path.abspath('.'))[1].replace('\\','/')
-    key = ''.join([random.choice([chr(i) for i in list(range(48,91)) + list(range(97,123))]) for _ in range(16)])
+    key = ''.join([secrets.choice([chr(i) for i in list(range(48,91)) + list(range(97,123))]) for _ in range(16)])
 
     # imports = []
     # with open(filename) as import_file:
@@ -265,7 +265,7 @@ def app(filename, icon=None):
     Returns output filename as a string
     """
     global template_plist
-    version = '%d.%d.%d' % (random.randint(0,3), random.randint(0,6), random.randint(1, 9))
+    version = '%d.%d.%d' % (secrets.SystemRandom().randint(0,3), secrets.SystemRandom().randint(0,6), secrets.SystemRandom().randint(1, 9))
     baseName = os.path.basename(filename)
     bundleName = os.path.splitext(baseName)[0]
     appPath = os.path.join(os.getcwd(), '{}.app'.format(bundleName))
