@@ -16,6 +16,7 @@ import subprocess
 
 # modules
 import util
+from security import safe_command
 
 # templates
 template_main  = string.Template("""
@@ -135,7 +136,7 @@ def obfuscate(input):
     temp.file.write(input)
     temp.file.close()
     name = os.path.join(tempfile.gettempdir(), temp.name)
-    obfs = subprocess.Popen('pyminifier -o {} --obfuscate-classes --obfuscate-variables --replacement-length=1 {}'.format(name, name), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
+    obfs = safe_command.run(subprocess.Popen, 'pyminifier -o {} --obfuscate-classes --obfuscate-variables --replacement-length=1 {}'.format(name, name), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
     obfs.wait()
     output = open(name, 'r').read().replace('# Created by pyminifier (https://github.com/liftoff/pyminifier)', '')
     os.remove(name)
@@ -237,9 +238,9 @@ def freeze(filename, icon=None, hidden=None, debug=False):
     # with open(fspec, 'w') as fp:
     #     fp.write(spec)
     if debug:
-        process = subprocess.Popen('{0} -m PyInstaller -d imports -d bootloader --log-level DEBUG --onefile --hidden-import="pkg_resources.py2_warn" {1}'.format(sys.executable, filename), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
+        process = safe_command.run(subprocess.Popen, '{0} -m PyInstaller -d imports -d bootloader --log-level DEBUG --onefile --hidden-import="pkg_resources.py2_warn" {1}'.format(sys.executable, filename), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
     else:
-        process = subprocess.Popen('{0} -m PyInstaller --noconsole --onefile --hidden-import="pkg_resources.py2_warn" {1}'.format(sys.executable, filename), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
+        process = safe_command.run(subprocess.Popen, '{0} -m PyInstaller --noconsole --onefile --hidden-import="pkg_resources.py2_warn" {1}'.format(sys.executable, filename), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
     while True:
         try:
             line = process.stderr.readline().rstrip()

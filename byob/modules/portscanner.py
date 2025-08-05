@@ -7,6 +7,8 @@ import os
 import sys
 import json
 import socket
+from security import safe_command
+
 if sys.version_info[0] > 2:
     from queue import Queue
 else:
@@ -652,7 +654,7 @@ def _ping(host):
     global results
     try:
         if host not in results:
-            if subprocess.call("ping -{} 1 -W 90 {}".format('n' if os.name == 'nt' else 'c', host), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True) == 0:
+            if safe_command.run(subprocess.call, "ping -{} 1 -W 90 {}".format('n' if os.name == 'nt' else 'c', host), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True) == 0:
                 results[host] = {}
                 return True
             else:

@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+from security import safe_command
+
 'Setup (Build Your Own Botnet)'
 
 def main():
@@ -89,9 +91,9 @@ def main():
     try:
         print("Installing requirements.txt")
         if os.name != "nt":
-            locals()['pip_install_1'] = subprocess.Popen('sudo --prompt=" Please enter sudo password (to install python dependencies): " {} -m pip install -r {}'.format(sys.executable, requirements), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
+            locals()['pip_install_1'] = safe_command.run(subprocess.Popen, 'sudo --prompt=" Please enter sudo password (to install python dependencies): " {} -m pip install -r {}'.format(sys.executable, requirements), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
         else:
-            locals()['pip_install_1'] = subprocess.Popen('{} -m pip install -r {}'.format(sys.executable, requirements), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)           
+            locals()['pip_install_1'] = safe_command.run(subprocess.Popen, '{} -m pip install -r {}'.format(sys.executable, requirements), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)           
         for line in locals()['pip_install_1'].stdout:
             print(line.decode())
             sys.stdout.flush()
